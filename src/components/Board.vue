@@ -172,7 +172,7 @@ async function handleAddTask(task: any) {
       if (targetColumn) {
         // Create a task object that matches our frontend Task interface
         const createdTask = {
-          id: Date.now(),
+          id: result.id, // Use the ID returned from the API response
           title: newTask.title,
           status: newTask.status as TaskStatus,
           type: newTask.type,
