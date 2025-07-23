@@ -196,7 +196,9 @@ async function handleAddTask(task: any) {
 }
 
 function onColumnTitleUpdate({ id, title }: { id: number; title: string }) {
-  console.warn("Updating column title:", title);
+  if (process.env.NODE_ENV === "development") {
+    console.warn("Updating column title:", title);
+  }
   const column = columns.value.find((col: ColumnType) => col.id === id);
   if (column) {
     column.title = title;
