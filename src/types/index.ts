@@ -19,6 +19,11 @@ export interface Task {
   createdAt?: string;
   updatedAt?: string;
   comments?: Comment[];
+  summary?: string;
+  collaborator?: {
+    name: string;
+    avatar: string;
+  };
 }
 
 export interface TaskFilter {

@@ -18,8 +18,6 @@
 const props = defineProps<{ onAddTask: () => void }>();
 
 function handleAddTask() {
-  if (typeof props.onAddTask === "function") {
-    props.onAddTask();
-  }
+  props.onAddTask();
 }
 </script>

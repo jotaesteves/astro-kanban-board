@@ -5,14 +5,7 @@
       <div class="flex items-center space-x-2">
         <span class="text-sm text-gray-600">Collaborators:</span>
         <div class="flex -space-x-1">
-          <span
-            v-for="user in limitedShowAvatars"
-            :key="user.id"
-            class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-500 text-white text-sm font-bold border-2 border-white shadow"
-            :title="user.name"
-          >
-            {{ user.name.charAt(0).toUpperCase() }}
-          </span>
+          <UserAvatar v-for="user in limitedShowAvatars" :key="user.id" :user="user" />
           <p
             v-if="(collaborators?.length ?? 0) > AVATAR_LIMIT"
             class="inline-flex items-center justify-center text-gray-700 text-sm font-bold px-2"
@@ -29,6 +22,7 @@
 <script setup lang="ts">
 import type { User } from "@/types";
 import { computed } from "vue";
+import UserAvatar from "./UserAvatar.vue";
 
 const AVATAR_LIMIT = 4; // Limit the number of avatars shown
 

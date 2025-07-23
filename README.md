@@ -1,52 +1,79 @@
-# Astro Starter Kit: Basics
+![Screenshot](./screenshot.png)
 
-```sh
-npm create astro@latest -- --template basics
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Astro](https://img.shields.io/badge/Astro-Framework-blueviolet)](https://astro.build/)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3.x-green)](https://vuejs.org/)
+[![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-blue)](https://tailwindcss.com/)
+
+# Astro Kanban Board
+
+Astro Kanban Board is a modern, collaborative Kanban board built with Astro, Vue.js, and TailwindCSS. It allows users to manage tasks, columns, and collaborators in a visually appealing and highly interactive interface. Features include drag-and-drop, customizable task types, avatars, and more.
+
+## Features
+
+- Drag-and-drop tasks and columns
+- Customizable task types and priorities
+- Collaborator avatars
+- Responsive design
+- Easy to extend and maintain
+
+## Screenshot
+
+![Kanban Board Screenshot](./screenshot.png)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher recommended)
+- pnpm (or npm/yarn)
+
+### Installation
+
+```bash
+pnpm install
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/basics)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/basics)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/basics/devcontainer.json)
+### Running the Project
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-![just-the-basics](https://github.com/withastro/astro/assets/2244813/a0a5533c-a856-4198-8470-2d67b1d7c554)
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+```bash
+pnpm run dev
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🧞 Commands
+### Building for Production
 
-All commands are run from the root of the project, from a terminal:
+```bash
+pnpm run build
+```
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
+## How to Collaborate
 
-## 👀 Want to learn more?
+1. Fork the repository and clone your fork.
+2. Create a new branch for your feature or fix:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+   ```bash
+   git checkout -b feature/my-feature
+   ```
+
+3. Make your changes and commit them with clear messages.
+4. Push your branch to your fork:
+
+   ```bash
+   git push origin feature/my-feature
+   ```
+
+5. Open a Pull Request to the main repository.
+6. Ensure your code follows the DRY and KISS principles and is well documented.
+
+## Contributing Guidelines
+
+- Use clear, descriptive commit messages.
+- Keep components clean and simple.
+- Add or update documentation as needed.
+- Respect code style and formatting.
+
+## License
+
+This project is licensed under the MIT License.
