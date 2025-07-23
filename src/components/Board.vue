@@ -151,7 +151,7 @@ async function handleAddTask(task: any) {
     summary: task.summary,
     status: task.status,
     assignee: task.collaborator?.name || "",
-    assigneeId: 1, // TODO: Map collaborator to actual ID
+    assigneeId: task.collaborator?.id || null, // Dynamically map collaborator to actual ID
     dueDate: "",
     priority: "medium",
     createdAt: task.createdAt,
