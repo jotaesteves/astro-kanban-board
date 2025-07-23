@@ -40,7 +40,6 @@ function onInput(e: Event) {
 }
 
 function saveEdit() {
-  console.warn("Saving column title:", editableTitleLocal.value);
   emit("update:title", editableTitleLocal.value);
   emit("save");
 }
