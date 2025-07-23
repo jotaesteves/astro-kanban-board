@@ -5,10 +5,9 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
 
-    // Generate a unique ID for the task
+    // Prepare task data without manual ID (auto-increment will handle it)
     const taskData = {
       ...data,
-      id: Date.now(), // Simple ID generation - in production you might want something more robust
       updatedAt: data.updatedAt || data.createdAt,
     };
 

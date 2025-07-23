@@ -55,7 +55,6 @@ export default async function seed() {
     { name: "Heidi", email: "heidi@example.com", avatarUrl: "" },
   ]);
 
-  /*
   await db.insert(Task).values([
     {
       columnId: 1,
@@ -66,6 +65,7 @@ export default async function seed() {
       description: "Initialize Astro Kanban project.",
       summary: "Project setup",
       assigneeId: 1, // Alice
+      assignee: "Alice",
       dueDate: "",
       priority: "high",
       createdAt: new Date().toISOString(),
@@ -80,6 +80,7 @@ export default async function seed() {
       description: "Add drag and drop for tasks and columns.",
       summary: "DnD feature",
       assigneeId: 2, // Bob
+      assignee: "Bob",
       dueDate: "",
       priority: "medium",
       createdAt: new Date().toISOString(),
@@ -94,6 +95,7 @@ export default async function seed() {
       description: "Code review for new features.",
       summary: "Review",
       assigneeId: 3, // Charlie
+      assignee: "Charlie",
       dueDate: "",
       priority: "low",
       createdAt: new Date().toISOString(),
@@ -108,12 +110,13 @@ export default async function seed() {
       description: "Deploy the Kanban board.",
       summary: "Deployment",
       assigneeId: 1, // Alice
+      assignee: "Alice",
       dueDate: "",
       priority: "high",
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     },
-  ]); */
+  ]);
 
   await db.insert(Label).values([
     { name: "Bug", color: "red" },

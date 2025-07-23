@@ -2,7 +2,7 @@ import { defineDb, defineTable, column } from "astro:db";
 
 const Collaborators = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     name: column.text(),
     email: column.text(),
     avatarUrl: column.text(),
@@ -11,7 +11,7 @@ const Collaborators = defineTable({
 
 const KanbanBoard = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     boardName: column.text(),
     description: column.text(),
     createdBy: column.text(),
@@ -23,7 +23,7 @@ const KanbanBoard = defineTable({
 
 const Column = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     boardId: column.number({ references: () => KanbanBoard.columns.id }),
     title: column.text(),
     status: column.text(),
@@ -32,7 +32,7 @@ const Column = defineTable({
 
 const Task = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     columnId: column.number({ references: () => Column.columns.id }),
     boardId: column.number({ references: () => KanbanBoard.columns.id }),
     title: column.text(),
@@ -51,7 +51,7 @@ const Task = defineTable({
 
 const Label = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     name: column.text(),
     color: column.text(),
   },
@@ -59,7 +59,7 @@ const Label = defineTable({
 
 const Tag = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     name: column.text(),
     color: column.text(),
     description: column.text(),
@@ -70,7 +70,7 @@ const Tag = defineTable({
 
 const Attachment = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     taskId: column.number({ references: () => Task.columns.id }),
     fileName: column.text(),
     fileType: column.text(),
@@ -86,7 +86,7 @@ const Attachment = defineTable({
 
 const Comment = defineTable({
   columns: {
-    id: column.number({ primaryKey: true }),
+    id: column.number({ primaryKey: true, autoIncrement: true }),
     taskId: column.number({ references: () => Task.columns.id }),
     content: column.text(),
     author: column.text(),
