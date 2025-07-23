@@ -6,6 +6,16 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const data = await request.json();
 
+    // Validate required fields for multi-board support
+    if (!data.boardId) {
+      return new Response(JSON.stringify({ error: "Missing boardId" }), {
+        status: 400,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
     // Prepare task data without manual ID (auto-increment will handle it)
     const taskData = {
       ...data,

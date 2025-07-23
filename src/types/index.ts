@@ -101,6 +101,14 @@ export interface User {
   avatarUrl?: string;
 }
 export interface KanbanBoard {
+  id: number;
+  name: string;
+  description?: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt?: string;
+  isPublic?: boolean;
+  collaborators?: User[];
   columns: Column[];
   tasks: Task[];
   users: User[];

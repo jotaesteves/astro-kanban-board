@@ -1,10 +1,16 @@
 <template>
-  <BoardNavbar client:only="vue" :title="title" :collaborators="collaborators" />
+  <BoardNavbar
+    client:only="vue"
+    :title="title"
+    :collaborators="collaborators"
+    :boards="boards"
+    :selectedBoardId="selectedBoardId"
+  />
   <div
     class="flex gap-4 p-8 bg-gray-100 min-h-screen overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
   >
     <ColumnComponent
-      v-for="(column, idx) in columns"
+      v-for="(column, idx) in filteredColumns"
       :key="column.id"
       :column="column"
       :onAddTask="() => openSideModal({ boardId: column.boardId || 1, columnId: column.id, status: column.status })"
@@ -42,20 +48,31 @@ import AddColumnButton from "../components/AddColumnButton.vue";
 import SideModal from "../components/SideModal.vue";
 import TaskDetailSidePanel from "../components/TaskDetailSidePanel.vue";
 
-import type { Column as ColumnType, Task, User } from "@/types";
+import type { Column as ColumnType, KanbanBoard, User, Comment } from "@/types";
 import { TaskStatus } from "@/types";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const title: string = "Kanban Board";
 
 // Props for server-fetched data
-const props = defineProps<{ collaborators: User[]; columns: ColumnType[]; comments: Comment[] }>();
+const props = defineProps<{
+  boards: KanbanBoard[];
+  collaborators: User[];
+  columns: ColumnType[];
+  comments: Comment[];
+}>();
+
+const selectedBoardId = ref(props.boards[0]?.id ?? null);
 
 const collaborators = ref([...props.collaborators]);
 const columns = ref([...props.columns]);
 const comments = ref([...props.comments]);
 
-console.log("comments", comments.value);
+const filteredColumns = computed(() => columns.value.filter((col) => col.boardId === selectedBoardId.value));
+
+const filteredTasks = computed(() => {
+  return filteredColumns.value.flatMap((col) => col.tasks);
+});
 
 function addColumn() {
   columns.value.push({
