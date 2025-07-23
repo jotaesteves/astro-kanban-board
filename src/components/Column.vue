@@ -10,14 +10,10 @@
       <ColumnTitle
         :title="column.title"
         :isEditing="isEditing"
-        :editableTitle="editableTitle"
+        :editableTitle="editableTitle ?? ''"
         @edit="editColumn"
         @save="saveEdit"
-        @update:title="
-          {
-            (val: string) => (editableTitle = val);
-          }
-        "
+        @update:title="(val: string) => editableTitle = val"
         @dragstart="onColumnDragStart"
         @dragend="onColumnDragEnd"
       />
@@ -51,7 +47,7 @@ import ColumnDropdown from "./ColumnDropdown.vue";
 import ColumnTitle from "./ColumnTitle.vue";
 import { ref } from "vue";
 const props = defineProps<{ column: Column; onAddTask: () => void }>();
-const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn"]);
+const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn", "updateTitle"]);
 const isDragOver = ref(false);
 const movingTask = ref<Column["tasks"][number] | null>(null);
 const isDropdownVisible = ref(false);
@@ -143,6 +139,7 @@ function editColumn() {
 function saveEdit() {
   if (editableTitle.value.trim()) {
     props.column.title = editableTitle.value.trim();
+    emit("updateTitle", { id: props.column.id, title: props.column.title });
   }
   isEditing.value = false;
 }

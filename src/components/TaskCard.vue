@@ -13,7 +13,7 @@
       <span class="ml-auto text-xs text-gray-400">#{{ task.id }}</span>
     </div>
     <div class="font-bold text-lg text-blue-900 mb-1">{{ task.title }}</div>
-    <div v-if="task.description" class="text-gray-700 text-sm mb-1">{{ task.description }}</div>
+    <div v-if="task.description" class="text-gray-700 text-sm mb-1 whitespace-pre-line">{{ task.description }}</div>
     <div v-if="task.summary" class="text-gray-500 text-xs mb-2">{{ task.summary }}</div>
     <div class="flex items-center justify-between mt-auto pt-2 border-t border-gray-100">
       <span class="text-xs text-gray-500">
