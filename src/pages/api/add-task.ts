@@ -1,3 +1,4 @@
+export const prerender = false;
 import { db, Task } from "astro:db";
 import type { APIRoute } from "astro";
 
@@ -8,6 +9,7 @@ export const POST: APIRoute = async ({ request }) => {
     // Prepare task data without manual ID (auto-increment will handle it)
     const taskData = {
       ...data,
+      assigneeId: typeof data.assigneeId === "number" && data.assigneeId !== null ? data.assigneeId : 1,
       updatedAt: data.updatedAt || data.createdAt,
     };
 
