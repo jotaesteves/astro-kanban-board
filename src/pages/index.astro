@@ -1,0 +1,10 @@
+---
+import type { Column } from "@/types";
+import Layout from "../layouts/Layout.astro";
+import Board from "../components/Board.vue";
+
+
+---
+<Layout title="Kanban Board">
+  <Board client:only="vue" />
+</Layout>
