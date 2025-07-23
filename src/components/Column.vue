@@ -29,7 +29,7 @@
     <ul class="flex-1 px-4 py-2 space-y-2">
       <li v-if="column.tasks.length === 0 && !isDragOver" class="text-gray-400 italic py-4 px-1">No tasks</li>
       <li v-else v-for="task in column.tasks" :key="task.id">
-        <TaskCard :task="task" />
+        <TaskCard :task="task" @openDetail="$emit('openTaskDetail', $event)" />
       </li>
       <li v-if="isDragOver && movingTask" class="preview-task animate-pulse">
         <TaskCard :task="movingTask" />
@@ -47,7 +47,7 @@ import ColumnDropdown from "./ColumnDropdown.vue";
 import ColumnTitle from "./ColumnTitle.vue";
 import { ref } from "vue";
 const props = defineProps<{ column: Column; onAddTask: () => void }>();
-const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn", "updateTitle"]);
+const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn", "updateTitle", "openTaskDetail"]);
 const isDragOver = ref(false);
 const movingTask = ref<Column["tasks"][number] | null>(null);
 const isDropdownVisible = ref(false);

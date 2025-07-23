@@ -149,34 +149,34 @@ export default async function seed() {
     },
   ]);
 
-  /* await db.insert(Comment).values([
-  {
-    taskId: 1,
-    author: "Alice",
-    content: "This task is ready for review.",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    taskId: 2,
-    author: "Bob",
-    content: "Working on the drag and drop feature.",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    taskId: 3,
-    author: "Charlie",
-    content: "Code review completed.",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    taskId: 4,
-    author: "Alice",
-    content: "Deployment successful.",
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-]); */
+  await db.insert(Comment).values([
+    {
+      taskId: 1,
+      author: "Alice",
+      content: "This task is ready for review.",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      taskId: 2,
+      author: "Bob",
+      content: "Working on the drag and drop feature.",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      taskId: 3,
+      author: "Charlie",
+      content: "Code review completed.",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      taskId: 4,
+      author: "Alice",
+      content: "Deployment successful.",
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+  ]);
 }

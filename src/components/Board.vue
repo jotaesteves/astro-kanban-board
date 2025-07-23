@@ -11,6 +11,7 @@
       @moveTask="moveTask"
       @deleteColumn="deleteColumn"
       @reorderColumn="reorderColumn"
+      @openTaskDetail="openTaskDetail"
       class="flex-shrink-0"
       @dragover="onColumnDragOver(idx)"
       @drop="onColumnDrop(idx)"
@@ -24,6 +25,13 @@
       @close="closeSideModal"
       @addTask="handleAddTask"
     />
+
+    <TaskDetailSidePanel
+      :visible="isTaskDetailVisible"
+      :task="selectedTask"
+      :comments="comments"
+      @close="closeTaskDetail"
+    />
   </div>
 </template>
 
@@ -32,18 +40,22 @@ import ColumnComponent from "../components/Column.vue";
 import BoardNavbar from "../components/BoardNavbar.vue";
 import AddColumnButton from "../components/AddColumnButton.vue";
 import SideModal from "../components/SideModal.vue";
+import TaskDetailSidePanel from "../components/TaskDetailSidePanel.vue";
 
-import type { Column as ColumnType, User } from "@/types";
+import type { Column as ColumnType, Task, User } from "@/types";
 import { TaskStatus } from "@/types";
 import { ref } from "vue";
 
 const title: string = "Kanban Board";
 
 // Props for server-fetched data
-const props = defineProps<{ collaborators: User[]; columns: ColumnType[] }>();
+const props = defineProps<{ collaborators: User[]; columns: ColumnType[]; comments: Comment[] }>();
 
 const collaborators = ref([...props.collaborators]);
 const columns = ref([...props.columns]);
+const comments = ref([...props.comments]);
+
+console.log("comments", comments.value);
 
 function addColumn() {
   columns.value.push({
@@ -134,6 +146,10 @@ function onColumnDrop(targetIdx: number) {
 const isSideModalVisible = ref(false);
 const sideModalColumnStatus = ref({ columnStatus: "", boardId: 0, columnId: 0 });
 
+// Task detail panel state
+const isTaskDetailVisible = ref(false);
+const selectedTask = ref<ColumnType["tasks"][0] | null>(null);
+
 function openSideModal({ boardId, columnId, status }: { boardId: number; columnId: number; status: string }) {
   sideModalColumnStatus.value = { columnStatus: status, boardId, columnId };
   isSideModalVisible.value = true;
@@ -189,10 +205,40 @@ async function handleAddTask(task: any) {
       }
     } else {
       console.error("Failed to add task:", await res.text());
+      // add task to the column even if API fails
+      const targetColumn = columns.value.find((col: ColumnType) => col.id === sideModalColumnStatus.value.columnId);
+      if (targetColumn) {
+        const createdTask = {
+          id: Date.now(), // Fallback ID for local state
+          title: newTask.title,
+          status: newTask.status as TaskStatus,
+          type: newTask.type,
+          description: newTask.description,
+          summary: newTask.summary,
+          assignee: newTask.assignee,
+          dueDate: newTask.dueDate,
+          priority: newTask.priority as any,
+          createdAt: newTask.createdAt,
+          updatedAt: newTask.updatedAt,
+          collaborator: task.collaborator,
+        };
+        targetColumn.tasks.push(createdTask);
+      }
     }
   } catch (error) {
     console.error("Error adding task:", error);
   }
+}
+
+// Task detail panel functions
+function openTaskDetail(task: ColumnType["tasks"][0]) {
+  selectedTask.value = task;
+  isTaskDetailVisible.value = true;
+}
+
+function closeTaskDetail() {
+  isTaskDetailVisible.value = false;
+  selectedTask.value = null;
 }
 
 function onColumnTitleUpdate({ id, title }: { id: number; title: string }) {

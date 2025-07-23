@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref } from "vue";
 const props = defineProps<{ visible: boolean; columnStatus: string }>();
 const emit = defineEmits(["close", "addTask"]);
 
