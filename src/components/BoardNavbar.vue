@@ -62,12 +62,12 @@ const props = defineProps<{
   selectedBoardId?: number | null;
 }>();
 
-const emit = defineEmits(["update:selectedBoardId"]);
+const emit = defineEmits(["updateSelectedBoardId"]);
 
 function onBoardChange(event: Event) {
   const target = event.target as HTMLSelectElement | null;
   if (target) {
-    emit("update:selectedBoardId", Number(target.value));
+    emit("updateSelectedBoardId", Number(target.value));
   }
 }
 

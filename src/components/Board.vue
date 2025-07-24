@@ -5,6 +5,7 @@
     :collaborators="collaborators"
     :boards="boards"
     :selectedBoardId="selectedBoardId"
+    @updateSelectedBoardId="onBoardChange"
   />
   <div
     class="flex gap-4 p-8 bg-gray-100 min-h-screen overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100"
@@ -74,9 +75,16 @@ const filteredTasks = computed(() => {
   return filteredColumns.value.flatMap((col) => col.tasks);
 });
 
+function onBoardChange(newBoardId: number) {
+  console.log("Selected board ID:", newBoardId);
+  selectedBoardId.value = newBoardId;
+}
+
 function addColumn() {
+  if (!selectedBoardId.value) return;
   columns.value.push({
     id: Date.now(),
+    boardId: selectedBoardId.value,
     title: "New Column",
     status: TaskStatus.Backlog,
     tasks: [],
@@ -107,8 +115,11 @@ function addTask(status: TaskStatus) {
 
 function moveTask({ taskId, newStatus }: { taskId: number; newStatus: TaskStatus }) {
   const fromColumn = columns.value.find((col: ColumnType) => col.tasks.some((task: any) => task.id === taskId));
-  const toColumn = columns.value.find((col: ColumnType) => col.status === newStatus);
-  if (!fromColumn || !toColumn) return;
+  const toColumn = columns.value.find(
+    (col: ColumnType) => col.status === newStatus && col.boardId === selectedBoardId.value
+  );
+  // Only allow moving within the same board
+  if (!fromColumn || !toColumn || fromColumn.boardId !== selectedBoardId.value) return;
   const taskIdx = fromColumn.tasks.findIndex((task: any) => task.id === taskId);
   if (taskIdx === -1) return;
   const [task] = fromColumn.tasks.splice(taskIdx, 1);

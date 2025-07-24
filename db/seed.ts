@@ -134,7 +134,7 @@ export default async function seed() {
   // Insert Production Board Tasks (boardId: 2)
   await db.insert(Task).values([
     {
-      columnId: 1,
+      columnId: 5,
       boardId: 2,
       title: "Setup production board",
       status: "backlog",
@@ -149,7 +149,7 @@ export default async function seed() {
       updatedAt: new Date().toISOString(),
     },
     {
-      columnId: 2,
+      columnId: 6,
       boardId: 2,
       title: "Implement production features",
       status: "in-progress",
@@ -164,7 +164,7 @@ export default async function seed() {
       updatedAt: new Date().toISOString(),
     },
     {
-      columnId: 3,
+      columnId: 7,
       boardId: 2,
       title: "Review production code",
       status: "review",
@@ -179,7 +179,7 @@ export default async function seed() {
       updatedAt: new Date().toISOString(),
     },
     {
-      columnId: 4,
+      columnId: 8,
       boardId: 2,
       title: "Deploy production board",
       status: "done",

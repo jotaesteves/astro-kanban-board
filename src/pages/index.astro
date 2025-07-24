@@ -27,13 +27,15 @@ const columns: ColumnType[] = await Promise.all(
       priority: task.priority as any,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
+      boardId: task.boardId,
+      columnId: task.columnId,
     }));
     return {
       id: col.id,
       boardId: col.boardId,
       title: col.title,
       status: col.status as TaskStatus,
-      tasks: tasks,
+      tasks: tasks.filter((task) => task.boardId === col.boardId), // Filter tasks for this column
     };
   })
 );
@@ -54,7 +56,6 @@ const boards = boardsRaw.map((board) => ({
   ...board,
   name: board.boardName, // Assuming boardName is the name
   columns: columns.filter((col) => col.boardId === board.id),
-  tasks: columns.filter((col) => col.boardId === board.id).flatMap((col) => col.tasks), // Only tasks for this board
   users: [], // Dummy property to satisfy KanbanBoard type
 }));
 ---
