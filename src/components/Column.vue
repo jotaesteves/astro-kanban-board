@@ -10,14 +10,10 @@
       <ColumnTitle
         :title="column.title"
         :isEditing="isEditing"
-        :editableTitle="editableTitle"
+        :editableTitle="editableTitle ?? ''"
         @edit="editColumn"
         @save="saveEdit"
-        @update:title="
-          {
-            (val: string) => (editableTitle = val);
-          }
-        "
+        @update:title="(val: string) => editableTitle = val"
         @dragstart="onColumnDragStart"
         @dragend="onColumnDragEnd"
       />
@@ -33,7 +29,7 @@
     <ul class="flex-1 px-4 py-2 space-y-2">
       <li v-if="column.tasks.length === 0 && !isDragOver" class="text-gray-400 italic py-4 px-1">No tasks</li>
       <li v-else v-for="task in column.tasks" :key="task.id">
-        <TaskCard :task="task" />
+        <TaskCard :task="task" @openDetail="$emit('openTaskDetail', $event)" />
       </li>
       <li v-if="isDragOver && movingTask" class="preview-task animate-pulse">
         <TaskCard :task="movingTask" />
@@ -51,7 +47,7 @@ import ColumnDropdown from "./ColumnDropdown.vue";
 import ColumnTitle from "./ColumnTitle.vue";
 import { ref } from "vue";
 const props = defineProps<{ column: Column; onAddTask: () => void }>();
-const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn"]);
+const emit = defineEmits(["moveTask", "deleteColumn", "reorderColumn", "updateTitle", "openTaskDetail"]);
 const isDragOver = ref(false);
 const movingTask = ref<Column["tasks"][number] | null>(null);
 const isDropdownVisible = ref(false);
@@ -143,6 +139,7 @@ function editColumn() {
 function saveEdit() {
   if (editableTitle.value.trim()) {
     props.column.title = editableTitle.value.trim();
+    emit("updateTitle", { id: props.column.id, title: props.column.title });
   }
   isEditing.value = false;
 }

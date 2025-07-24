@@ -11,7 +11,7 @@
         @input="onInput"
         @keydown.enter="saveEdit"
         @blur="saveEdit"
-        class="text-lg font-bold px-4 py-3 border-gray-200 outline-none rounded bg-gray-100"
+        class="text-lg font-bold px-4 py-3 border-gray-200 outline-none rounded bg-gray-100 w-full"
         :placeholder="title"
         autofocus
       />
@@ -37,10 +37,10 @@ watch(
 function onInput(e: Event) {
   const val = (e.target as HTMLInputElement).value;
   editableTitleLocal.value = val;
-  emit("update:title", val);
 }
 
 function saveEdit() {
+  emit("update:title", editableTitleLocal.value);
   emit("save");
 }
 </script>

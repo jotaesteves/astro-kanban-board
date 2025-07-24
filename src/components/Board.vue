@@ -7,21 +7,30 @@
       v-for="(column, idx) in columns"
       :key="column.id"
       :column="column"
-      :onAddTask="() => openSideModal(column.status)"
+      :onAddTask="() => openSideModal({ boardId: column.boardId || 1, columnId: column.id, status: column.status })"
       @moveTask="moveTask"
       @deleteColumn="deleteColumn"
       @reorderColumn="reorderColumn"
+      @openTaskDetail="openTaskDetail"
       class="flex-shrink-0"
       @dragover="onColumnDragOver(idx)"
       @drop="onColumnDrop(idx)"
+      @updateTitle="onColumnTitleUpdate"
     />
     <AddColumnButton class="flex-shrink-0" @addColumn="addColumn" />
 
     <SideModal
       :visible="isSideModalVisible"
-      :columnStatus="sideModalColumnStatus"
+      :columnStatus="sideModalColumnStatus.columnStatus"
       @close="closeSideModal"
       @addTask="handleAddTask"
+    />
+
+    <TaskDetailSidePanel
+      :visible="isTaskDetailVisible"
+      :task="selectedTask"
+      :comments="comments"
+      @close="closeTaskDetail"
     />
   </div>
 </template>
@@ -31,56 +40,22 @@ import ColumnComponent from "../components/Column.vue";
 import BoardNavbar from "../components/BoardNavbar.vue";
 import AddColumnButton from "../components/AddColumnButton.vue";
 import SideModal from "../components/SideModal.vue";
+import TaskDetailSidePanel from "../components/TaskDetailSidePanel.vue";
 
-import type { Column, User } from "@/types";
+import type { Column as ColumnType, Task, User } from "@/types";
 import { TaskStatus } from "@/types";
 import { ref } from "vue";
 
 const title: string = "Kanban Board";
-const collaborators: User[] = [
-  {
-    id: 1,
-    name: "Alice",
-    email: "",
-  },
-  {
-    id: 2,
-    name: "Bob",
-    email: "",
-  },
-  {
-    id: 3,
-    name: "Charlie",
-    email: "",
-  },
-  {
-    id: 4,
-    name: "David",
-    email: "",
-  },
-  {
-    id: 5,
-    name: "Eve",
-    email: "",
-  },
-  {
-    id: 6,
-    name: "Frank",
-    email: "",
-  },
-  {
-    id: 7,
-    name: "Charlie",
-    email: "",
-  },
-];
 
-const columns = ref<Column[]>([
-  { id: 1, title: "Backlog", status: TaskStatus.Backlog, tasks: [] },
-  { id: 2, title: "In Progress", status: TaskStatus.InProgress, tasks: [] },
-  { id: 3, title: "Review", status: TaskStatus.Review, tasks: [] },
-  { id: 4, title: "Done", status: TaskStatus.Done, tasks: [] },
-]);
+// Props for server-fetched data
+const props = defineProps<{ collaborators: User[]; columns: ColumnType[]; comments: Comment[] }>();
+
+const collaborators = ref([...props.collaborators]);
+const columns = ref([...props.columns]);
+const comments = ref([...props.comments]);
+
+console.log("comments", comments.value);
 
 function addColumn() {
   columns.value.push({
@@ -102,7 +77,7 @@ function addTask(status: TaskStatus) {
     console.warn("Invalid status for new task:", status);
     return;
   }
-  const column = columns.value.find((c) => c.status === status);
+  const column = columns.value.find((c: ColumnType) => c.status === status);
   if (column) {
     column.tasks.push({
       id: Date.now(),
@@ -114,10 +89,10 @@ function addTask(status: TaskStatus) {
 }
 
 function moveTask({ taskId, newStatus }: { taskId: number; newStatus: TaskStatus }) {
-  const fromColumn = columns.value.find((col) => col.tasks.some((task) => task.id === taskId));
-  const toColumn = columns.value.find((col) => col.status === newStatus);
+  const fromColumn = columns.value.find((col: ColumnType) => col.tasks.some((task: any) => task.id === taskId));
+  const toColumn = columns.value.find((col: ColumnType) => col.status === newStatus);
   if (!fromColumn || !toColumn) return;
-  const taskIdx = fromColumn.tasks.findIndex((task) => task.id === taskId);
+  const taskIdx = fromColumn.tasks.findIndex((task: any) => task.id === taskId);
   if (taskIdx === -1) return;
   const [task] = fromColumn.tasks.splice(taskIdx, 1);
   task.status = newStatus;
@@ -125,15 +100,15 @@ function moveTask({ taskId, newStatus }: { taskId: number; newStatus: TaskStatus
 }
 
 function deleteColumn(columnId: number) {
-  const index = columns.value.findIndex((col) => col.id === columnId);
+  const index = columns.value.findIndex((col: ColumnType) => col.id === columnId);
   if (index !== -1) {
     columns.value.splice(index, 1);
   }
 }
 
 function reorderColumn({ fromId, toId }: { fromId: number; toId: number }) {
-  const fromIdx = columns.value.findIndex((col) => col.id === fromId);
-  const toIdx = columns.value.findIndex((col) => col.id === toId);
+  const fromIdx = columns.value.findIndex((col: ColumnType) => col.id === fromId);
+  const toIdx = columns.value.findIndex((col: ColumnType) => col.id === toId);
   if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return;
   const [moved] = columns.value.splice(fromIdx, 1);
   columns.value.splice(toIdx, 0, moved);
@@ -157,7 +132,7 @@ function onColumnDrop(targetIdx: number) {
     event.preventDefault();
     const columnId = event.dataTransfer?.getData("columnId");
     if (!columnId) return;
-    const fromIdx = columns.value.findIndex((col) => col.id === Number(columnId));
+    const fromIdx = columns.value.findIndex((col: ColumnType) => col.id === Number(columnId));
     if (fromIdx === -1 || fromIdx === targetIdx) return;
     const [moved] = columns.value.splice(fromIdx, 1);
     columns.value.splice(targetIdx, 0, moved);
@@ -169,22 +144,110 @@ function onColumnDrop(targetIdx: number) {
 }
 
 const isSideModalVisible = ref(false);
-const sideModalColumnStatus = ref("");
+const sideModalColumnStatus = ref({ columnStatus: "", boardId: 0, columnId: 0 });
 
-function openSideModal(status: string) {
-  sideModalColumnStatus.value = status;
+// Task detail panel state
+const isTaskDetailVisible = ref(false);
+const selectedTask = ref<ColumnType["tasks"][0] | null>(null);
+
+function openSideModal({ boardId, columnId, status }: { boardId: number; columnId: number; status: string }) {
+  sideModalColumnStatus.value = { columnStatus: status, boardId, columnId };
   isSideModalVisible.value = true;
 }
 function closeSideModal() {
   isSideModalVisible.value = false;
 }
-function handleAddTask(task: any) {
-  const column = columns.value.find((c) => c.status === task.status);
-  if (column) {
-    column.tasks.push({
-      id: Date.now(),
-      ...task,
+async function handleAddTask(task: any) {
+  const newTask = {
+    columnId: sideModalColumnStatus.value.columnId,
+    boardId: sideModalColumnStatus.value.boardId,
+    title: task.title,
+    type: task.type,
+    description: task.description,
+    summary: task.summary,
+    status: task.status,
+    assignee: task.collaborator?.name || "",
+    assigneeId: task.collaborator?.id || null, // Dynamically map collaborator to actual ID
+    dueDate: "",
+    priority: "medium",
+    createdAt: task.createdAt,
+    updatedAt: task.createdAt,
+  };
+
+  try {
+    const res = await fetch("/api/add-task", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newTask),
     });
+
+    if (res.ok) {
+      const result = await res.json();
+      // Find the target column and add the task
+      const targetColumn = columns.value.find((col: ColumnType) => col.id === sideModalColumnStatus.value.columnId);
+      if (targetColumn) {
+        // Create a task object that matches our frontend Task interface
+        const createdTask = {
+          id: result.id, // Use the ID returned from the API response
+          title: newTask.title,
+          status: newTask.status as TaskStatus,
+          type: newTask.type,
+          description: newTask.description,
+          summary: newTask.summary,
+          assignee: newTask.assignee,
+          dueDate: newTask.dueDate,
+          priority: newTask.priority as any,
+          createdAt: newTask.createdAt,
+          updatedAt: newTask.updatedAt,
+          collaborator: task.collaborator,
+        };
+        targetColumn.tasks.push(createdTask);
+      }
+    } else {
+      console.error("Failed to add task:", await res.text());
+      // add task to the column even if API fails
+      const targetColumn = columns.value.find((col: ColumnType) => col.id === sideModalColumnStatus.value.columnId);
+      if (targetColumn) {
+        const createdTask = {
+          id: Date.now(), // Fallback ID for local state
+          title: newTask.title,
+          status: newTask.status as TaskStatus,
+          type: newTask.type,
+          description: newTask.description,
+          summary: newTask.summary,
+          assignee: newTask.assignee,
+          dueDate: newTask.dueDate,
+          priority: newTask.priority as any,
+          createdAt: newTask.createdAt,
+          updatedAt: newTask.updatedAt,
+          collaborator: task.collaborator,
+        };
+        targetColumn.tasks.push(createdTask);
+      }
+    }
+  } catch (error) {
+    console.error("Error adding task:", error);
+  }
+}
+
+// Task detail panel functions
+function openTaskDetail(task: ColumnType["tasks"][0]) {
+  selectedTask.value = task;
+  isTaskDetailVisible.value = true;
+}
+
+function closeTaskDetail() {
+  isTaskDetailVisible.value = false;
+  selectedTask.value = null;
+}
+
+function onColumnTitleUpdate({ id, title }: { id: number; title: string }) {
+  if (process.env.NODE_ENV === "development") {
+    console.warn("Updating column title:", title);
+  }
+  const column = columns.value.find((col: ColumnType) => col.id === id);
+  if (column) {
+    column.title = title;
   }
 }
 </script>

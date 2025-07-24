@@ -1,5 +1,6 @@
 export interface Column {
   id: number;
+  boardId?: number;
   title: string;
   status: TaskStatus;
   tasks: Task[];

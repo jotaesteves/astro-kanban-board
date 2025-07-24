@@ -1,9 +1,45 @@
 ---
-import type { Column } from "@/types";
+import type { Column as ColumnType, User, TaskStatus } from "@/types";
 import Layout from "../layouts/Layout.astro";
 import Board from "../components/Board.vue";
+import { Collaborators, Column, db, Comment } from "astro:db";
+
+const collaborators: User[] = await db.select().from(Collaborators);
+// Fetch columns and their tasks to match the Column type
+const columnsRaw = await db.select().from(Column);
+// Assuming you have a Task table and a way to fetch tasks by column
+import { Task } from "astro:db";
+import { eq } from "astro:db";
+
+const columns: ColumnType[] = await Promise.all(
+  columnsRaw.map(async (col) => {
+    const tasksRaw = await db.select().from(Task).where(eq(Task.columnId, col.id));
+    const tasks = tasksRaw.map((task) => ({
+      id: task.id,
+      title: task.title,
+      status: task.status as TaskStatus,
+      type: task.type as any,
+      description: task.description,
+      summary: task.summary,
+      assignee: task.assignee,
+      dueDate: task.dueDate,
+      priority: task.priority as any,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+    }));
+    return {
+      id: col.id,
+      boardId: col.boardId,
+      title: col.title,
+      status: col.status as TaskStatus,
+      tasks: tasks,
+    };
+  })
+);
+
+const comments = await db.select().from(Comment);
 ---
 
 <Layout title="Kanban Board">
-  <Board client:only="vue" />
+  <Board client:only="vue" collaborators={collaborators} columns={columns} comments={comments} />
 </Layout>
