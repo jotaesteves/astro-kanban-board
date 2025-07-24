@@ -11,15 +11,20 @@ Astro Kanban Board is a modern, collaborative Kanban board built with Astro, Vue
 
 ## Features
 
-- Drag-and-drop tasks and columns
+- **Multiple Kanban boards** with a board selector
+- Drag-and-drop tasks and columns (per board)
 - Customizable task types and priorities
 - Collaborator avatars
 - Responsive design
 - Easy to extend and maintain
 
-## Screenshot
+## What's New
 
-![Kanban Board Screenshot](./screenshot.png)
+- Multi-board support: Create and manage multiple Kanban boards
+- Board selector in the navbar for switching between boards
+- Tasks and columns are always separated by board
+- Drag-and-drop and add column/task features are board-aware
+- Improved type safety and backend validation
 
 ## Getting Started
 
