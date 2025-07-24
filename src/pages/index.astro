@@ -2,7 +2,8 @@
 import type { Column as ColumnType, User, TaskStatus } from "@/types";
 import Layout from "../layouts/Layout.astro";
 import Board from "../components/Board.vue";
-import { Collaborators, Column, db, Comment } from "astro:db";
+import { Collaborators, Column, db, KanbanBoard, Comment as CommentTable } from "astro:db";
+import type { Comment } from "@/types";
 
 const collaborators: User[] = await db.select().from(Collaborators);
 // Fetch columns and their tasks to match the Column type
@@ -26,20 +27,39 @@ const columns: ColumnType[] = await Promise.all(
       priority: task.priority as any,
       createdAt: task.createdAt,
       updatedAt: task.updatedAt,
+      boardId: task.boardId,
+      columnId: task.columnId,
     }));
     return {
       id: col.id,
       boardId: col.boardId,
       title: col.title,
       status: col.status as TaskStatus,
-      tasks: tasks,
+      tasks: tasks.filter((task) => task.boardId === col.boardId), // Filter tasks for this column
     };
   })
 );
 
-const comments = await db.select().from(Comment);
+const commentsRaw = await db.select().from(CommentTable);
+const comments = commentsRaw.map((comment) => ({
+  id: comment.id,
+  taskId: comment.taskId,
+  author: comment.author,
+  content: comment.content,
+  createdAt: comment.createdAt,
+  updatedAt: comment.updatedAt,
+}));
+
+// Map boards to include missing properties for KanbanBoard type
+const boardsRaw = await db.select().from(KanbanBoard);
+const boards = boardsRaw.map((board) => ({
+  ...board,
+  name: board.boardName, // Assuming boardName is the name
+  columns: columns.filter((col) => col.boardId === board.id),
+  users: [], // Dummy property to satisfy KanbanBoard type
+}));
 ---
 
 <Layout title="Kanban Board">
-  <Board client:only="vue" collaborators={collaborators} columns={columns} comments={comments} />
+  <Board client:only="vue" boards={boards} collaborators={collaborators} columns={columns} comments={comments} />
 </Layout>
